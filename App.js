@@ -1,20 +1,33 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
-import Constants from "expo-constants";
 import {
   SafeAreaView,
-  StyleSheet,
   Text,
   View,
-  TextInput,
   TouchableOpacity,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
+  Alert,
 } from "react-native";
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { Formik } from "formik";
+import { SignupSchema } from "./validation";
+import { styles } from "./style";
+import FormField from "./FormField";
 
 export default function App() {
+  function onSubmitHandler(values) {
+    Alert.alert(
+      "Register successfull!!!",
+      "From data: " + JSON.stringify(values)
+    );
+  }
+
+  function isFormValid(isValid, touched) {
+    return isValid && Object.keys(touched).length !== 0;
+  }
+
   return (
     <>
       <StatusBar style="dark" />
@@ -27,49 +40,101 @@ export default function App() {
             <Text style={styles.headerText}>Register</Text>
           </View>
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <KeyboardAwareScrollView extraScrollHeight={200} style={styles.content}>
-              <View style={styles.form}>
-                <Text style={styles.inputText}>Username</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Username"
-                  placeholderTextColor="#cdcdcf"
-                />
-                <Text style={styles.inputText}>Password</Text>
-                <TextInput
-                  secureTextEntry={true}
-                  style={styles.input}
-                  placeholder="Password"
-                  placeholderTextColor="#cdcdcf"
-                />
-                <Text style={styles.inputText}>Email</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Email"
-                  placeholderTextColor="#cdcdcf"
-                />
-                <Text style={styles.inputText}>Phone</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Phone"
-                  placeholderTextColor="#cdcdcf"
-                />
-                <Text style={styles.inputText}>Address</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Address"
-                  placeholderTextColor="#cdcdcf"
-                />
-                <Text style={styles.inputText}>Description</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Description"
-                  placeholderTextColor="#cdcdcf"
-                />
-                <TouchableOpacity style={styles.buttonRegister}>
-                  <Text style={styles.buttonRegisterText}>Register</Text>
-                </TouchableOpacity>
-              </View>
+            <KeyboardAwareScrollView
+              extraScrollHeight={200}
+              style={styles.content}
+              keyboardShouldPersistTaps="handled"
+            >
+              <Formik
+                initialValues={{
+                  username: "",
+                  password: "",
+                  email: "",
+                  phone: "",
+                  address: "",
+                  description: "",
+                }}
+                validationSchema={SignupSchema}
+                onSubmit={onSubmitHandler}
+              >
+                {({
+                  handleChange,
+                  handleBlur,
+                  handleSubmit,
+                  values,
+                  errors,
+                  touched,
+                  isValid,
+                }) => (
+                  <>
+                    <FormField
+                      label="Username"
+                      field="username"
+                      handleChange={handleChange}
+                      handleBlur={handleBlur}
+                      values={values}
+                      errors={errors}
+                      touched={touched}
+                    />
+
+                    <FormField
+                      label="Password"
+                      field="password"
+                      handleChange={handleChange}
+                      handleBlur={handleBlur}
+                      values={values}
+                      errors={errors}
+                      touched={touched}
+                    />
+
+                    <FormField
+                      label="Email"
+                      field="email"
+                      handleChange={handleChange}
+                      handleBlur={handleBlur}
+                      values={values}
+                      errors={errors}
+                      touched={touched}
+                    />
+
+                    <FormField
+                      label="Phone"
+                      field="phone"
+                      handleChange={handleChange}
+                      handleBlur={handleBlur}
+                      values={values}
+                      errors={errors}
+                      touched={touched}
+                    />
+
+                    <FormField
+                      label="Address"
+                      field="address"
+                      handleChange={handleChange}
+                      handleBlur={handleBlur}
+                      values={values}
+                      errors={errors}
+                      touched={touched}
+                    />
+
+                    <TouchableOpacity
+                      disabled={!isFormValid(isValid, touched)}
+                      onPress={handleSubmit}
+                    >
+                      <View
+                        style={[
+                          styles.buttonRegister,
+                          {
+                            opacity: isFormValid(isValid, touched) ? 1 : 0.5,
+                          },
+                        ]}
+                      >
+                        <Text style={styles.buttonRegisterText}>Register</Text>
+                      </View>
+                    </TouchableOpacity>
+                  </>
+                )}
+              </Formik>
             </KeyboardAwareScrollView>
           </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
@@ -77,55 +142,3 @@ export default function App() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "space-between",
-    paddingTop: Constants.statusBarHeight,
-  },
-  header: {
-    height: 60,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#3498db",
-  },
-  headerText: {
-    color: "#fff",
-    fontSize: 20,
-  },
-  content: {
-    flex: 1,
-    padding: 22,
-    backgroundColor: "#f9f9f9",
-   
-  },
-  form: {
-    marginBottom: 10,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#cdcdcf",
-    color: "#333333",
-    fontSize: 16,
-    width: 300,
-    height: 44,
-    paddingHorizontal: 15,
-    margin: 10,
-  },
-  inputText: {
-    paddingHorizontal: 15,
-  },
-  buttonRegister: {
-    height: 42,
-    backgroundColor: "#1977f3",
-    borderRadius: 6,
-    justifyContent: "center",
-    marginVertical: 15,
-  },
-  buttonRegisterText: {
-    color: "#b4cafb",
-    textAlign: "center",
-    fontSize: 16,
-  },
-});
